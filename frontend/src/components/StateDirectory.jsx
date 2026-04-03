@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Map, Layers, ChevronDown, Building, Search, ArrowRight, Bookmark, SortAsc } from 'lucide-react';
+import { Layers, ChevronDown, Map, CornerDownRight, Bookmark, Filter, Info } from 'lucide-react';
 import { toast } from 'react-toastify';
 
 const DistrictGroup = ({ district, cities, index }) => {
@@ -8,47 +8,44 @@ const DistrictGroup = ({ district, cities, index }) => {
 
     return (
         <motion.div 
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
-            className="content-card glass glass-hover"
-            style={{ marginBottom: '1.25rem', overflow: 'hidden' }}
+            className="stat-card"
+            style={{ marginBottom: '1rem', padding: 0, overflow: 'hidden', border: isExpanded ? '1px solid var(--primary-light)' : '1px solid var(--border)', cursor: 'default' }}
         >
             <div 
-                className="card-header" 
-                style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem 1.5rem', background: isExpanded ? 'var(--bg-secondary)' : '#fff' }}
                 onClick={() => setIsExpanded(!isExpanded)}
             >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <div style={{ background: 'rgba(139, 92, 246, 0.1)', padding: '6px', borderRadius: '8px' }}>
-                        <Map size={18} color="#8B5CF6" />
+                    <div style={{ background: isExpanded ? 'var(--primary-light)' : 'var(--bg-secondary)', padding: '8px', borderRadius: '10px' }}>
+                        <Map size={18} color={isExpanded ? 'var(--primary)' : 'var(--text-secondary)'} />
                     </div>
-                    <span style={{ fontWeight: 700, fontSize: '1.1rem', color: '#F1F5F9' }}>{district}</span>
-                    <span style={{ background: 'rgba(59, 130, 246, 0.1)', color: '#3B82F6', padding: '2px 8px', borderRadius: '6px', fontSize: '0.65rem', fontWeight: 600 }}>{cities.length} Offices</span>
+                    <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{district}</span>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>• {cities.length} Offices</span>
                 </div>
                 <motion.div animate={{ rotate: isExpanded ? 180 : 0 }}>
-                    <ChevronDown size={20} color="#94A3B8" />
+                    <ChevronDown size={18} color="var(--text-placeholder)" />
                 </motion.div>
             </div>
 
             <AnimatePresence>
                 {isExpanded && (
                     <motion.div 
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        style={{ overflow: 'hidden' }}
+                        initial={{ height: 0 }}
+                        animate={{ height: 'auto' }}
+                        exit={{ height: 0 }}
                     >
-                        <div className="results-grid" style={{ padding: '1.5rem', background: 'rgba(30, 41, 59, 0.2)' }}>
+                        <div style={{ padding: '1.5rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.75rem', borderTop: '1px solid var(--divider)' }}>
                             {cities.map((city, j) => (
-                                <motion.div 
+                                <div 
                                     key={j} 
-                                    whileHover={{ scale: 1.05, background: 'rgba(59, 130, 246, 0.05)' }}
-                                    style={{ padding: '0.85rem 1rem', background: 'rgba(15, 23, 42, 0.4)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', gap: '10px' }}
+                                    style={{ padding: '0.75rem 1rem', background: 'var(--bg-secondary)', borderRadius: '10px', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}
                                 >
-                                    <CornerDownRight size={14} color="#3B82F6" />
-                                    <strong style={{ fontSize: '0.9rem', color: '#E2E8F0', fontWeight: 600 }}>{city}</strong>
-                                </motion.div>
+                                    <CornerDownRight size={12} color="var(--text-placeholder)" />
+                                    <span style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>{city}</span>
+                                </div>
                             ))}
                         </div>
                     </motion.div>
@@ -60,56 +57,54 @@ const DistrictGroup = ({ district, cities, index }) => {
 
 const StateDirectory = ({ states, onBrowse, results, loading }) => {
     const [selectedState, setSelectedState] = useState('');
-    const [searchTerm, setSearchTerm] = useState('');
-
-    const filteredStates = states.filter(s => s.toLowerCase().includes(searchTerm.toLowerCase()));
 
     const handleBrowse = () => {
         if (selectedState) {
             onBrowse(selectedState);
         } else {
-            toast.error('Please select a state to view the network');
+            toast.error('Select a State');
         }
     };
 
     return (
-        <section className="view-container">
+        <section style={{ padding: '2.5rem' }}>
             <motion.div 
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="search-hero"
+                style={{ textAlign: 'center', marginBottom: '3.5rem' }}
             >
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(139, 92, 246, 0.1)', padding: '6px 12px', borderRadius: '12px', color: '#8B5CF6', fontSize: '0.75rem', fontWeight: 700, marginBottom: '1.5rem' }}>
-                    <Layers size={14} /> EXPLORE BY ADMINISTRATIVE ZONE
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'var(--secondary-light)', padding: '6px 14px', borderRadius: '10px', color: 'var(--secondary)', fontSize: '0.7rem', fontWeight: 800, marginBottom: '1.25rem', letterSpacing: '0.5px' }}>
+                    <Layers size={14} fill="currentColor" /> REGIONAL CLUSTERS
                 </div>
-                <h2 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem', color: '#F1F5F9' }}>State Directory</h2>
-                <p style={{ color: '#94A3B8', marginBottom: '2.5rem', maxWidth: '500px', margin: '0 auto 2.5rem' }}>
-                    Browse through thousands of post offices grouped by districts within their respective administrative states.
+                <h2 style={{ fontSize: '2.25rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--text-primary)', letterSpacing: '-1px' }}>State Directory</h2>
+                <p style={{ color: 'var(--text-secondary)', marginBottom: '2.5rem', maxWidth: '450px', margin: '0 auto 2.5rem', lineHeight: '1.6' }}>
+                    Access high-level administrative groupings and drill down into specific district network densities.
                 </p>
 
-                <div className="search-input-group glass" style={{ maxWidth: '650px', padding: '10px', gap: '10px' }}>
+                <div style={{ maxWidth: '650px', margin: '0 auto', display: 'flex', gap: '8px', background: '#fff', padding: '8px', borderRadius: '16px', boxShadow: 'var(--shadow-soft)', border: '1px solid var(--border)' }}>
                     <div style={{ flex: 1, position: 'relative' }}>
                         <select 
                             className="floating-input"
-                            style={{ paddingTop: '1rem', appearance: 'none' }}
+                            style={{ paddingTop: '1.1rem', appearance: 'none', border: 'none', background: 'var(--bg-secondary)' }}
                             value={selectedState} 
                             onChange={(e) => setSelectedState(e.target.value)}
                         >
-                            <option value="" disabled>Choose an Indian State...</option>
+                            <option value="" disabled>Select an Indian State...</option>
                             {states.map((s, i) => (
                                 <option key={i} value={s}>{s}</option>
                             ))}
                         </select>
                         <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
-                            <ChevronDown size={18} color="#94A3B8" />
+                            <ChevronDown size={18} color="var(--text-placeholder)" />
                         </div>
                     </div>
                     <button 
+                        className="primary-btn"
                         onClick={handleBrowse} 
                         disabled={loading}
-                        style={{ background: 'linear-gradient(to right, #3B82F6, #8B5CF6)', display: 'flex', alignItems: 'center', gap: '8px', minWidth: '150px', justifyContent: 'center' }}
+                        style={{ background: 'var(--secondary)', display: 'flex', alignItems: 'center', gap: '10px', minWidth: '160px', justifyContent: 'center' }}
                     >
-                        {loading ? <div className="spinner" style={{ width: '16px', height: '16px', borderTopColor: '#fff', marginBottom: 0 }} /> : <><Layers size={18} /> View Network</>}
+                        {loading ? <div className="spinner" style={{ width: '16px', height: '16px', borderTopColor: '#fff', marginBottom: 0 }} /> : <><Layers size={18} /> Browse Directory</>}
                     </button>
                 </div>
             </motion.div>
@@ -119,19 +114,13 @@ const StateDirectory = ({ states, onBrowse, results, loading }) => {
                     <motion.div 
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
                         className="results-container"
                     >
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                            <h3 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Postal Infrastructure: <span style={{ color: '#3B82F6' }}>{selectedState}</span></h3>
-                            <div style={{ display: 'flex', gap: '0.75rem' }}>
-                                <button className="icon-btn" style={{ padding: '6px 12px', fontSize: '0.75rem', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', color: '#94A3B8', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                    <SortAsc size={14} /> Sort A-Z
-                                </button>
-                                <button className="icon-btn" style={{ padding: '6px 12px', fontSize: '0.75rem', borderRadius: '8px', background: 'rgba(59, 130, 246, 0.1)', color: '#3B82F6', border: '1px solid rgba(59, 130, 246, 0.2)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                    <Bookmark size={14} /> Save State
-                                </button>
-                            </div>
+                            <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Network Density: <span style={{ color: 'var(--primary)' }}>{selectedState}</span></h3>
+                            <button style={{ color: 'var(--text-secondary)', background: 'var(--bg-secondary)', border: '1px solid var(--border)', padding: '6px 12px', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+                                <Filter size={14} /> Filter Results
+                            </button>
                         </div>
                         
                         {Object.entries(results).map(([district, cities], i) => (
@@ -140,7 +129,10 @@ const StateDirectory = ({ states, onBrowse, results, loading }) => {
                     </motion.div>
                 ) : (
                     results && !loading && (
-                        <div className="empty-state">No directory data found for {selectedState}</div>
+                        <div style={{ textAlign: 'center', padding: '4rem 0', color: 'var(--text-placeholder)' }}>
+                            <Info size={40} style={{ marginBottom: '1rem', opacity: 0.3 }} />
+                            <p>Select a state to view the administrative directory.</p>
+                        </div>
                     )
                 )}
             </AnimatePresence>
@@ -148,30 +140,12 @@ const StateDirectory = ({ states, onBrowse, results, loading }) => {
             {loading && (
                 <div style={{ marginTop: '2rem' }}>
                     {[1, 2, 3, 4].map(i => (
-                        <div key={i} className="content-card glass shimmer" style={{ height: '70px', marginBottom: '1.25rem' }} />
+                        <div key={i} className="stat-card shimmer" style={{ height: '70px', marginBottom: '1rem' }} />
                     ))}
                 </div>
             )}
         </section>
     );
 };
-
-// Internal component for grid indentation
-const CornerDownRight = ({ size, color }) => (
-    <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        width={size} 
-        height={size} 
-        viewBox="0 0 24 24" 
-        fill="none" 
-        stroke={color} 
-        strokeWidth="2" 
-        strokeLinecap="round" 
-        strokeLinejoin="round" 
-    >
-        <polyline points="15 10 20 15 15 20" />
-        <path d="M4 4v7a4 4 0 0 0 4 4h12" />
-    </svg>
-);
 
 export default StateDirectory;
