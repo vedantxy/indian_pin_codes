@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import Sidebar from './components/Sidebar';
 import TopNav from './components/TopNav';
 import Dashboard from './components/Dashboard';
@@ -25,13 +29,18 @@ const App = () => {
                 }
             } catch (err) {
                 console.error('Error fetching states:', err);
+                toast.error('Failed to load Indian states network');
             }
         };
         fetchStates();
     }, []);
 
     const addToHistory = (type, value) => {
-        const newItem = { type, value, time: new Date().toLocaleTimeString() };
+        const newItem = { 
+            type, 
+            value, 
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+        };
         const newHistory = [newItem, ...searchHistory.slice(0, 9)];
         setSearchHistory(newHistory);
         localStorage.setItem('searchHistory', JSON.stringify(newHistory));
@@ -45,13 +54,14 @@ const App = () => {
             if (res.ok) {
                 setPincodeResults(data);
                 addToHistory('Pincode', pincode);
+                toast.success(`Success! Found ${data.length} offices for ${pincode}`);
             } else {
                 setPincodeResults([]);
-                alert(data.message || 'Error fetching pincode details');
+                toast.warning(data.message || 'No data found for this pincode');
             }
         } catch (err) {
             console.error('Error:', err);
-            alert('Failed to fetch pincode details');
+            toast.error('Network error during pincode retrieval');
         } finally {
             setLoading(false);
         }
@@ -65,16 +75,30 @@ const App = () => {
             if (res.ok) {
                 setStateResults(data);
                 addToHistory('State', stateName);
+                const districtCount = Object.keys(data).length;
+                toast.success(`Loaded ${districtCount} districts for ${stateName}`);
             } else {
                 setStateResults({});
-                alert(data.message || 'Error fetching state directory');
+                toast.warning(data.message || 'Could not load state directory');
             }
         } catch (err) {
             console.error('Error:', err);
-            alert('Failed to fetch state directory');
+            toast.error('Network error during state directory fetch');
         } finally {
             setLoading(false);
         }
+    };
+
+    const pageVariants = {
+        initial: { opacity: 0, x: 20 },
+        in: { opacity: 1, x: 0 },
+        out: { opacity: 0, x: -20 }
+    };
+
+    const pageTransition = {
+        type: "tween",
+        ease: "anticipate",
+        duration: 0.4
     };
 
     return (
@@ -85,35 +109,53 @@ const App = () => {
                 <TopNav />
                 
                 <div style={{ flex: 1, position: 'relative', overflowY: 'auto' }}>
-                    {loading && (
-                        <div className="loader-container" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 100, background: 'rgba(248, 250, 252, 0.8)' }}>
-                            <div className="spinner"></div>
-                            <p style={{ fontWeight: 600, color: '#2563eb' }}>Scanning global database...</p>
-                        </div>
-                    )}
-                    
-                    {activeView === 'dashboard' && (
-                        <Dashboard history={searchHistory} />
-                    )}
-                    
-                    {activeView === 'pincode' && (
-                        <PincodeSearch 
-                            onSearch={handlePincodeSearch} 
-                            results={pincodeResults} 
-                            loading={loading} 
-                        />
-                    )}
-                    
-                    {activeView === 'states' && (
-                        <StateDirectory 
-                            states={states} 
-                            onBrowse={handleStateBrowse} 
-                            results={stateResults} 
-                            loading={loading} 
-                        />
-                    )}
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={activeView}
+                            initial="initial"
+                            animate="in"
+                            exit="out"
+                            variants={pageVariants}
+                            transition={pageTransition}
+                            style={{ height: '100%' }}
+                        >
+                            {activeView === 'dashboard' && (
+                                <Dashboard history={searchHistory} />
+                            )}
+                            
+                            {activeView === 'pincode' && (
+                                <PincodeSearch 
+                                    onSearch={handlePincodeSearch} 
+                                    results={pincodeResults} 
+                                    loading={loading} 
+                                />
+                            )}
+                            
+                            {activeView === 'states' && (
+                                <StateDirectory 
+                                    states={states} 
+                                    onBrowse={handleStateBrowse} 
+                                    results={stateResults} 
+                                    loading={loading} 
+                                />
+                            )}
+                        </motion.div>
+                    </AnimatePresence>
                 </div>
             </main>
+
+            <ToastContainer 
+                position="top-right"
+                autoClose={4000}
+                hideProgressBar={false}
+                newestOnTop
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+            />
         </div>
     );
 };
