@@ -51,14 +51,13 @@ const PincodeSearch = ({ onSearch, results, loading }) => {
                     Quickly retrieve authenticated postal data including office classification and district boundaries.
                 </p>
 
-                <div style={{ maxWidth: '600px', margin: '0 auto', display: 'flex', gap: '8px', background: '#fff', padding: '8px', borderRadius: '16px', boxShadow: 'var(--shadow-soft)', border: '1px solid var(--border)' }}>
-                    <div className="floating-input-group" style={{ flex: 1, marginBottom: 0 }}>
+                <div style={{ maxWidth: '600px', margin: '0 auto', display: 'flex', gap: '12px', background: '#fff', padding: '10px', borderRadius: '20px', boxShadow: 'var(--shadow-soft)', border: '1px solid var(--border)', alignItems: 'center' }}>
+                    <div className="floating-input-group">
                         <input 
                             type="text" 
                             placeholder=" "
                             maxLength={6}
                             className="floating-input"
-                            style={{ background: 'var(--bg-secondary)', border: 'none' }}
                             value={pincode}
                             onChange={(e) => {
                                 const val = e.target.value.replace(/\D/g, '');
@@ -66,15 +65,15 @@ const PincodeSearch = ({ onSearch, results, loading }) => {
                             }}
                             onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                         />
-                        <label className="floating-label" style={{ left: '1.25rem' }}>Enter 6-digit Pincode</label>
+                        <label className="floating-label">Enter 6-digit Pincode</label>
                     </div>
                     <button 
                         className="primary-btn"
                         onClick={handleSearch} 
                         disabled={loading}
-                        style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: '140px', justifyContent: 'center' }}
+                        style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: '130px', justifyContent: 'center', height: '52px', borderRadius: '14px' }}
                     >
-                        {loading ? <div className="spinner" style={{ width: '16px', height: '16px', borderTopColor: '#fff', marginBottom: 0 }} /> : <><Search size={18} /> Search</>}
+                        {loading ? <div className="spinner" style={{ width: '16px', height: '16px', borderTopColor: '#fff', marginBottom: 0 }} /> : <><Search size={20} strokeWidth={2.5} /> Search</>}
                     </button>
                 </div>
             </motion.div>
