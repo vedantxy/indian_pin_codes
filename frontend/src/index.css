@@ -1,43 +1,40 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-    /* Main Palette - Pure Light Mode */
-    --primary: #3B82F6;
-    --primary-hover: #2563EB;
-    --primary-light: #DBEAFE;
+    /* Creative Gradient Palette */
+    --primary: #5E7E8F; /* Muted teal-gray from template */
+    --primary-hover: #4A6676;
+    --primary-light: #DEE5E9;
     
-    --secondary: #8B5CF6;
-    --secondary-light: #F3E8FF;
+    --secondary: #94A3B8;
+    --secondary-light: #F1F5F9;
     
-    --success: #22C55E;
-    --success-bg: #DCFCE7;
-    --error: #EF4444;
-    --error-bg: #FEE2E2;
-    --warning: #F59E0B;
-    --warning-bg: #FEF3C7;
+    --success: #10B981;
+    --success-bg: #D1FAE5;
+    --error: #F43F5E;
+    --error-bg: #FFE4E6;
     
-    /* Surface Layers */
+    /* Surface Layers - Creative Gradients */
     --bg-main: #FFFFFF;
-    --bg-secondary: #F9FAFB;
-    --surface: #FFFFFF;
-    --surface-tertiary: #F1F5F9;
+    --bg-gradient: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%);
+    --surface-glass: rgba(255, 255, 255, 0.7);
+    --surface-tertiary: rgba(241, 245, 249, 0.5);
     
     /* Text */
-    --text-primary: #0F172A;
-    --text-secondary: #475569;
+    --text-primary: #1E293B;
+    --text-secondary: #64748B;
     --text-placeholder: #94A3B8;
     
-    /* Borders & Depth */
-    --border: #E2E8F0;
-    --divider: #F1F5F9;
-    --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.04);
-    --shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.08);
+    /* Effects */
+    --border: rgba(226, 232, 240, 0.8);
+    --divider: rgba(241, 245, 249, 0.5);
+    --shadow-creative: 0 10px 40px -10px rgba(94, 126, 143, 0.15);
+    --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
     
     /* Rhythm */
+    --radius-xl: 24px;
     --radius-lg: 16px;
     --radius-md: 12px;
-    --spacing-xs: 8px;
-    --spacing-sm: 16px;
 }
 
 * {
@@ -48,7 +45,8 @@
 }
 
 body {
-    background-color: var(--bg-secondary);
+    background: var(--bg-gradient);
+    background-attachment: fixed;
     color: var(--text-primary);
     min-height: 100vh;
     overflow-x: hidden;
@@ -128,7 +126,16 @@ body {
     display: flex;
     flex-direction: column;
     min-width: 0;
-    background: var(--bg-main);
+    background: transparent;
+}
+
+.glass-card {
+    background: var(--surface-glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-glass);
 }
 
 .top-nav {

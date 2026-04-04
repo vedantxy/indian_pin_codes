@@ -8,6 +8,8 @@ import TopNav from './components/TopNav';
 import Dashboard from './components/Dashboard';
 import PincodeSearch from './components/PincodeSearch';
 import StateDirectory from './components/StateDirectory';
+import LocationPicker from './components/LocationPicker';
+import ExportView from './components/ExportView';
 
 const App = () => {
     const [activeView, setActiveView] = useState('dashboard');
@@ -22,7 +24,7 @@ const App = () => {
     useEffect(() => {
         const fetchStates = async () => {
             try {
-                const res = await fetch('/states');
+                const res = await fetch('/api/states');
                 if (res.ok) {
                     const data = await res.json();
                     setStates(data);
@@ -49,7 +51,7 @@ const App = () => {
     const handlePincodeSearch = async (pincode) => {
         setLoading(true);
         try {
-            const res = await fetch(`/api/${pincode}`);
+            const res = await fetch(`/api/pincode/${pincode}`);
             const data = await res.json();
             if (res.ok) {
                 setPincodeResults(data);
@@ -70,7 +72,7 @@ const App = () => {
     const handleStateBrowse = async (stateName) => {
         setLoading(true);
         try {
-            const res = await fetch(`/states/${encodeURIComponent(stateName)}`);
+            const res = await fetch(`/api/states/${encodeURIComponent(stateName)}`);
             const data = await res.json();
             if (res.ok) {
                 setStateResults(data);
@@ -138,6 +140,14 @@ const App = () => {
                                     results={stateResults} 
                                     loading={loading} 
                                 />
+                            )}
+
+                            {activeView === 'location' && (
+                                <LocationPicker states={states} />
+                            )}
+
+                            {activeView === 'downloads' && (
+                                <ExportView states={states} />
                             )}
                         </motion.div>
                     </AnimatePresence>
