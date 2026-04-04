@@ -1,5 +1,6 @@
 # 📮 Pincode Explorer - National Postal Archive
 
+[![Live Demo](https://img.shields.io/badge/Demo-Live-green?style=for-the-badge&logo=render)](https://indian_pincodes.onrender.com)
 [![MIT License](https://img.shields.io/badge/License-MIT-teal.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/badge/Version-1.2.0-blue.svg)](https://github.com/vedantxy/indian_pincodes)
 [![Tech Stack](https://img.shields.io/badge/Stack-MERN-green.svg)](#tech-stack)
