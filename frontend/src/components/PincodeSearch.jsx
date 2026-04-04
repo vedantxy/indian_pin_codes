@@ -103,10 +103,10 @@ const PincodeSearch = ({ onSearch, results, loading }) => {
                                     </div>
                                 </div>
 
-                                <h4 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.5rem', letterSpacing: '-0.5px' }}>{item.officeName}</h4>
+                                <h4 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.5rem', letterSpacing: '-0.5px' }}>{item.office}</h4>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '2rem', fontWeight: 500 }}>
                                     <MapPin size={16} color="var(--primary)" strokeWidth={2.5} />
-                                    <span>{item.districtName}, <strong style={{ color: 'var(--text-primary)' }}>{item.stateName}</strong></span>
+                                    <span>{item.district}, <strong style={{ color: 'var(--text-primary)' }}>{item.state}</strong></span>
                                 </div>
 
                                 <div style={{ display: 'flex', gap: '0.75rem', borderTop: '1px solid var(--divider)', paddingTop: '1.25rem' }}>
