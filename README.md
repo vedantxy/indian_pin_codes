@@ -110,25 +110,15 @@ pincode-explorer/
 
 ---
 
-## 🔗 API Documentation
+## 🔗 API Reference
 
-### Route Categories
+### 1. Pincode Operations
 
-| Method | Route | Description | Request Body | Auth |
-| :--- | :--- | :--- | :--- | :--- |
-| **GET** | `/api/pincode/:code` | Get full details for a specific pincode | N/A | No |
-| **GET** | `/api/search?q=...` | Get live suggestions (Office/Pincode/District) | N/A | No |
-| **GET** | `/api/states` | List all unique states in the network | N/A | No |
-| **GET** | `/api/states/:name` | List all districts & offices for a state | N/A | No |
-| **GET** | `/api/stats` | High-level metrics for the dashboard | N/A | No |
-| **GET** | `/api/export` | Download Master CSV of all records | N/A | Yes |
-| **GET** | `/api/export?state=X` | Download CSV for a specific region | N/A | Yes |
-
-### Route Details Example
-
-#### **Pincode Lookup**
-- **Purpose**: Retrieve precise administrative data for a 6-digit code.
-- **Success Response (200 OK):**
+#### **Fetch Details by Pincode**
+- **Endpoint**: `GET /api/pincode/:pincode`
+- **Description**: Retrieves all administrative offices associated with a 6-digit postal code.
+- **Example**: `GET /api/pincode/380001`
+- **Response (200 OK)**:
   ```json
   [
     {
@@ -139,14 +129,91 @@ pincode-explorer/
     }
   ]
   ```
-- **Error Response (404 Not Found):**
+
+#### **Live Search Suggestions**
+- **Endpoint**: `GET /api/search?q=:query`
+- **Description**: Predictive search for offices, pincodes, or districts.
+- **Example**: `GET /api/search?q=adi`
+- **Response (200 OK)**:
   ```json
-  { "message": "No offices found for this pincode" }
+  [
+    {
+      "office": "Adicunchanagiri B.O",
+      "pincode": "571448",
+      "district": "Mandya",
+      "state": "KARNATAKA"
+    }
+  ]
   ```
-- **cURL Request:**
-  ```bash
-  curl http://localhost:3000/api/pincode/380001
+
+### 2. Regional Directory
+
+#### **List All States**
+- **Endpoint**: `GET /api/states`
+- **Description**: Returns an alphabetical list of all unique Indian states in the database.
+- **Response (200 OK)**:
+  ```json
+  ["ANDAMAN & NICOBAR ISLANDS", "ANDHRA PRADESH", "ARUNACHAL PRADESH", "ASSAM", ...]
   ```
+
+#### **State District Directory**
+- **Endpoint**: `GET /api/states/:state_name`
+- **Description**: Returns a hierarchical map of districts and their respective office units.
+- **Example**: `GET /api/states/GUJARAT`
+- **Response (200 OK)**:
+  ```json
+  {
+    "AHMEDABAD": ["Ahmedabad G.P.O.", "Ambavadi S.O", ...],
+    "AMRELI": ["Amreli H.O", "Babra S.O", ...]
+  }
+  ```
+
+#### **Fetch Districts for State**
+- **Endpoint**: `GET /api/states/:state/districts`
+- **Description**: Returns a flat list of unique districts under a specific state.
+- **Response (200 OK)**:
+  ```json
+  ["AHMEDABAD", "AMRELI", "ANAND", "BANAS KANTHA", ...]
+  ```
+
+### 3. Administrative Analytics
+
+#### **Global Stats Overview**
+- **Endpoint**: `GET /api/stats`
+- **Description**: High-level metrics for dashboard cards.
+- **Response (200 OK)**:
+  ```json
+  {
+    "totalPincodes": 19097,
+    "totalStates": 36,
+    "totalDistricts": 743,
+    "supportNodes": 9572
+  }
+  ```
+
+#### **Service Reach Ratio**
+- **Endpoint**: `GET /api/stats/delivery-distribution`
+- **Description**: Data for the delivery status pie chart.
+- **Response (200 OK)**:
+  ```json
+  {
+    "delivery": 145251,
+    "nonDelivery": 9572
+  }
+  ```
+
+### 4. Data Export (CSV)
+
+#### **Master CSV Export**
+- **Endpoint**: `GET /api/export`
+- **Description**: Triggers a browser download for the entire national database in CSV format.
+- **Output**: `pincode_data_all.csv`
+
+#### **Regional CSV Export**
+- **Endpoint**: `GET /api/export?state=:state_name`
+- **Description**: Triggers download for a specific state jurisdiction.
+- **Example**: `GET /api/export?state=GUJARAT`
+- **Output**: `pincode_data_gujarat.csv`
 
 ---
 
