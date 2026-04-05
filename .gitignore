@@ -1,5 +1,22 @@
-node_modules
+# Dependency management
+node_modules/
+**/node_modules/
+
+# Environment and sensitive data
 .env
-.env.example
+.env.local
+**/ .env
+**/ .env.local
 inspect_results.txt
 *.log
+
+# Build artifacts
+frontend/dist/
+backend/dist/
+build/
+dist/
+
+# OS and IDE specific
+.DS_Store
+.vscode/
+.idea/

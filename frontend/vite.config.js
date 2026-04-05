@@ -6,8 +6,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': 'http://localhost:3000',
-      '/states': 'http://localhost:3000'
+      '/api': 'http://localhost:3000'
     }
+  },
+  optimizeDeps: {
+    include: ['react-is', 'recharts', 'react-simple-maps', 'd3-geo', 'd3-scale', 'topojson-client']
   }
 })

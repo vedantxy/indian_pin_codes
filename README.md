@@ -49,24 +49,25 @@ A premium, high-performance administrative dashboard designed for navigating and
 ## 📂 Project Structure
 
 ```bash
-pincode-explorer/
-├── index.js                # Express API Server (Backend Entry)
-├── package.json            # Node.js dependencies & scripts
-├── .env                    # Environment secrets (Mongo URI, Port)
+project/
+├── backend/                # Server and API logic
+│   ├── index.js            # Express API Server (Backend Entry)
+│   ├── package.json        # Backend dependencies & scripts
+│   └── .env                # Environment secrets (Mongo URI, Port)
 ├── frontend/               # React Vite Application
 │   ├── src/
 │   │   ├── App.jsx         # Layout Manager & Main Application State
 │   │   ├── index.css       # Core Design System (Colors, Gradients, Utilities)
 │   │   └── components/
 │   │       ├── Dashboard.jsx      # Metrics overview & Recharts visualization
+│   │       ├── IndiaMap.jsx       # Interactive SVG Choropleth Map
 │   │       ├── PincodeSearch.jsx  # Primary pincode scanning tool
 │   │       ├── StateDirectory.jsx # Hierarchical regional archives
-│   │       ├── ExportView.jsx     # Master & Regional data management
-│   │       ├── LocationPicker.jsx # Interactive administrative navigator
-│   │       ├── Sidebar.jsx        # Navigation & Identity Management
-│   │       └── TopNav.jsx         # Global search & Quick Actions
+│   │       └── Sidebar.jsx        # Navigation & Identity Management
 │   └── vite.config.js      # Vite configuration & Proxy setup
-└── README.md               # Full Documentation
+├── package.json            # Root workspace scripts (concurrently)
+├── README.md               # Full Documentation
+└── .gitignore              # Repository exclusion rules
 ```
 
 ---
@@ -86,7 +87,7 @@ pincode-explorer/
    ```
 
 2. **Backend Configuration:**
-   Create a `.env` file in the root directory:
+   Create a `.env` file in the `backend` directory:
    ```env
    PORT=3000
    MONGO_URI=your_mongodb_connection_string
@@ -94,20 +95,38 @@ pincode-explorer/
 
 3. **Install Dependencies (Root):**
    ```bash
-   npm install
-   ```
+   # Installs dependencies for both frontend and backend
+## 🚀 Deployment Guide (Render.com)
 
-4. **Frontend Configuration:**
-   ```bash
-   cd frontend
-   npm install
-   ```
+To deploy this project as a single "Web Service" on [Render](https://render.com), follow these steps:
 
-5. **Start Development Environment:**
-   ```bash
-   # In root directory
-   npm run dev
-   ```
+1.  **Connect your GitHub Repository** to a new Render **Web Service**.
+2.  **Environment Settings**:
+    - **Runtime**: `Node`
+    - **Build Command**: `npm run build`
+    - **Start Command**: `npm start`
+3.  **Environment Variables**:
+    Add the following in the Render dashboard:
+    - `MONGO_URI`: Your MongoDB Atlas connection string.
+    - `NODE_ENV`: `production`
+4.  **Click Deploy**: Render will automatically install dependencies, build the React frontend, and start the Express server.
+
+---
+
+## 📈 Visual Intelligence & Roadmap
+
+- [x] **Phase 1**: Core API & Search implementation.
+- [x] **Phase 2**: Premium "Creative Gradient" UI Overhaul.
+- [x] **Phase 3**: Interactive India Choropleth Map integration.
+- [x] **Phase 4**: MVC Backend Refactoring for scalability.
+- [ ] **Phase 5**: District-level granular map drill-down (In Progress).
+
+---
+
+## 📄 License
+Distributed under the MIT License. See `LICENSE` for more information.
+
+**Post-It Admin** - Built with ❤️ for India's Postal Network.
 
 ---
 

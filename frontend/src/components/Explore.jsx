@@ -188,14 +188,14 @@ const Explore = ({ states }) => {
                                             <td style={{ padding: '1.25rem 1.5rem', fontWeight: 700, fontSize: '0.9rem' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                                     <Building2 size={16} color="var(--primary)" />
-                                                    {item.officeName}
+                                                    {item.office}
                                                 </div>
                                             </td>
                                             <td style={{ padding: '1.25rem 1.5rem', fontWeight: 400, color: 'var(--primary)', fontFamily: 'monospace', fontSize: '1rem' }}>
                                                 {item.pincode}
                                             </td>
-                                            <td style={{ padding: '1.25rem 1.5rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{item.districtName}</td>
-                                            <td style={{ padding: '1.25rem 1.5rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{item.stateName}</td>
+                                            <td style={{ padding: '1.25rem 1.5rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{item.district}</td>
+                                            <td style={{ padding: '1.25rem 1.5rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{item.state}</td>
                                         </tr>
                                     ))}
                                 </tbody>
