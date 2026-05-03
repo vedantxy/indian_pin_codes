@@ -1,26 +1,24 @@
-const Project = require('../models/Project');
-const { getFieldMap } = require('../utils/fieldMap');
-const { getQuery } = require('../utils/queryHelper');
+const Pincode = require('../models/Pincode.model');
+
+const STATE_KEY = 'stateName                                       ';
 
 exports.exportToCSV = async (req, res) => {
     try {
         const { state } = req.query;
-        const query = state ? getQuery('stateName', state) : {};
-        const fieldMap = getFieldMap();
+        const query = state ? { [STATE_KEY]: new RegExp(`^\\s*${state}\\s*$`, 'i') } : {};
         
-        const data = await Project.find(query).lean();
+        const data = await Pincode.find(query).lean();
         if (data.length === 0) {
             return res.status(404).send('No data found to export');
         }
 
-        const fields = ['pincode', 'officeName', 'taluk', 'districtName', 'stateName', 'deliveryStatus'];
+        const fields = ['pincode', 'officeName', 'taluk', 'districtName', STATE_KEY, 'deliveryStatus'];
         const displayHeaders = ['Pincode', 'Office Name', 'Taluk', 'District', 'State', 'Delivery Status'];
 
         let csvContent = displayHeaders.join(',') + '\n';
         data.forEach(item => {
             const row = fields.map(field => {
-                const actualKey = fieldMap[field] || field;
-                let val = item[actualKey] || '';
+                let val = item[field] || '';
                 if (typeof val === 'string') val = val.trim();
                 const escaped = val.toString().replace(/"/g, '""');
                 return `"${escaped}"`;

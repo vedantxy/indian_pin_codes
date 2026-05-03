@@ -3,13 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import Sidebar from './components/Sidebar';
-import TopNav from './components/TopNav';
-import Dashboard from './components/Dashboard';
-import PincodeSearch from './components/PincodeSearch';
-import StateDirectory from './components/StateDirectory';
-import LocationPicker from './components/LocationPicker';
-import ExportView from './components/ExportView';
+import Sidebar from './components/layout/Sidebar.jsx';
+import TopNav from './components/layout/Navbar.jsx';
+import Dashboard from './pages/Dashboard.jsx';
+import PincodeSearch from './pages/PincodeLookup.jsx';
+import StateDirectory from './pages/Explore.jsx';
+import LocationPicker from './components/explore/FilterPanel.jsx';
+import ExportView from './components/ui/ExportView.jsx';
 
 const App = () => {
     const [activeView, setActiveView] = useState('dashboard');

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TrendingUp, Database, CheckCircle, Clock, BarChart3, Search, Map, Zap, ArrowUpRight, Activity, Info, Hash, Globe } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie, Legend } from 'recharts';
-import IndiaMap from './IndiaMap';
+import IndiaMap from '../components/dashboard/IndiaMap';
 
 const StatCard = ({ label, value, trend, icon: Icon, color, bgColor }) => {
     const [count, setCount] = useState(0);
@@ -69,29 +69,33 @@ const Dashboard = ({ history }) => {
     const [distribution, setDistribution] = useState([]);
     const [deliveryData, setDeliveryData] = useState([]);
     const [stateReach, setStateReach] = useState([]);
+    const [chartData, setChartData] = useState([]);
     const [loading, setLoading] = useState(true);
 
 
 
     const fetchData = async () => {
         try {
-            const [sRes, dRes, delRes, reachRes] = await Promise.all([
+            const [sRes, dRes, delRes, reachRes, activityRes] = await Promise.all([
                 fetch('/api/stats'),
                 fetch('/api/stats/state-distribution'),
                 fetch('/api/stats/delivery-distribution'),
-                fetch('/api/stats/state-reach')
+                fetch('/api/stats/state-reach'),
+                fetch('/api/stats/search-activity')
             ]);
             
-            const [sData, dData, delData, reachData] = await Promise.all([
+            const [sData, dData, delData, reachData, activityData] = await Promise.all([
                 sRes.json(),
                 dRes.json(),
                 delRes.json(),
-                reachRes.json()
+                reachRes.json(),
+                activityRes.json()
             ]);
 
             if (sRes.ok) setStats(sData);
             if (dRes.ok) setDistribution(dData);
             if (reachRes.ok) setStateReach(reachData);
+            if (activityRes.ok) setChartData(activityData);
             if (delRes.ok) {
                 setDeliveryData([
                     { name: 'Delivery', value: delData.delivery, color: '#10B981' },
@@ -108,16 +112,6 @@ const Dashboard = ({ history }) => {
     useEffect(() => {
         fetchData();
     }, []);
-
-    const chartData = [
-        { name: 'Mon', searches: 400 },
-        { name: 'Tue', searches: 300 },
-        { name: 'Wed', searches: 600 },
-        { name: 'Thu', searches: 800 },
-        { name: 'Fri', searches: 500 },
-        { name: 'Sat', searches: 900 },
-        { name: 'Sun', searches: 1100 },
-    ];
 
     const COLORS = ['#14B8A6', '#0EA5E9', '#6366F1', '#8B5CF6', '#D946EF'];
 
@@ -156,7 +150,7 @@ const Dashboard = ({ history }) => {
                         </h3>
                         <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: 800, letterSpacing: '0.5px' }}>7 DAY ANALYTICS</span>
                     </div>
-                    <div style={{ width: '100%', height: 260 }}>
+                    <div style={{ width: '100%', height: 260, minHeight: 260 }}>
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={chartData}>
                                 <defs>
@@ -245,7 +239,7 @@ const Dashboard = ({ history }) => {
                             <h2 style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--text-primary)', marginTop: '4px' }}>Network efficiency</h2>
                         </div>
                         
-                        <div style={{ width: '100%', height: 180, position: 'relative', display: 'flex', justifyContent: 'center' }}>
+                        <div style={{ width: '100%', height: 180, minHeight: 180, position: 'relative', display: 'flex', justifyContent: 'center' }}>
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie

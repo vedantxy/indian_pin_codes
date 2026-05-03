@@ -1,15 +1,14 @@
 {
-  "name": "pincode-explorer-root",
+  "name": "indian-pincodes-fullstack",
   "version": "1.0.0",
-  "description": "Root package.json to manage frontend and backend",
   "private": true,
   "scripts": {
-    "build": "npm install --prefix backend --omit=dev && npm install --prefix frontend --include=dev && npm run build --prefix frontend",
-    "vercel-build": "npm install --prefix frontend --include=dev && npm run build --prefix frontend",
-    "start": "node backend/index.js",
-    "dev": "concurrently \"npm run dev --prefix frontend\" \"npm start --prefix backend\""
+    "frontend-dev": "npm run dev --prefix frontend",
+    "backend-dev": "npm run dev --prefix backend",
+    "dev": "concurrently \"npm run frontend-dev\" \"npm run backend-dev\"",
+    "install-all": "npm install && npm install --prefix frontend && npm install --prefix backend"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "concurrently": "^8.2.2"
   }
 }

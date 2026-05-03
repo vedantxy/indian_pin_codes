@@ -25,7 +25,7 @@ const TopNav = () => {
         const timer = setTimeout(async () => {
             setLoading(true);
             try {
-                const res = await fetch(`/api/search?q=${encodeURIComponent(searchTerm)}`);
+                const res = await fetch(`/api/pincodes/search?q=${encodeURIComponent(searchTerm)}`);
                 const data = await res.json();
                 if (res.ok) {
                     setSuggestions(data);
@@ -131,7 +131,7 @@ const TopNav = () => {
                                         {item.pincode.includes(searchTerm) ? <Hash size={16} color="var(--primary)" /> : <MapPin size={16} color="var(--primary)" />}
                                     </div>
                                     <div style={{ flex: 1 }}>
-                                        <p style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)' }}>{item.office}</p>
+                                        <p style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)' }}>{item.officeName}</p>
                                         <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{item.district}, {item.state} • {item.pincode}</p>
                                     </div>
                                 </div>
