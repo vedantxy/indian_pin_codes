@@ -7,8 +7,8 @@ import Sidebar from './components/layout/Sidebar.jsx';
 import TopNav from './components/layout/Navbar.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import PincodeSearch from './pages/PincodeLookup.jsx';
-import StateDirectory from './pages/Explore.jsx';
-import LocationPicker from './components/explore/FilterPanel.jsx';
+import LocationIndex from './pages/Explore.jsx';
+import StateDirectory from './pages/StateDirectory.jsx';
 import ExportView from './components/ui/ExportView.jsx';
 
 const App = () => {
@@ -134,16 +134,11 @@ const App = () => {
                             )}
                             
                             {activeView === 'states' && (
-                                <StateDirectory 
-                                    states={states} 
-                                    onBrowse={handleStateBrowse} 
-                                    results={stateResults} 
-                                    loading={loading} 
-                                />
+                                <StateDirectory />
                             )}
 
                             {activeView === 'location' && (
-                                <LocationPicker states={states} />
+                                <LocationIndex />
                             )}
 
                             {activeView === 'downloads' && (

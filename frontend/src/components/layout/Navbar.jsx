@@ -25,7 +25,7 @@ const TopNav = () => {
         const timer = setTimeout(async () => {
             setLoading(true);
             try {
-                const res = await fetch(`/api/pincodes/search?q=${encodeURIComponent(searchTerm)}`);
+                const res = await fetch(`/api/search?q=${encodeURIComponent(searchTerm)}`);
                 const data = await res.json();
                 if (res.ok) {
                     setSuggestions(data);
@@ -123,7 +123,7 @@ const TopNav = () => {
                                     }}
                                     className="suggestion-item"
                                     onClick={() => {
-                                        setSearchTerm(item.office);
+                                        setSearchTerm(item.officeName || '');
                                         setShowSuggestions(false);
                                     }}
                                 >

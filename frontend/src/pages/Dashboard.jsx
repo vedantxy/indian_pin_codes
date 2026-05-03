@@ -1,119 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TrendingUp, Database, CheckCircle, Clock, BarChart3, Search, Map, Zap, ArrowUpRight, Activity, Info, Hash, Globe } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie, Legend } from 'recharts';
+import { TrendingUp, Clock, Hash, Globe, Zap, Activity, Info, Search, Map } from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
 import IndiaMap from '../components/dashboard/IndiaMap';
-
-const StatCard = ({ label, value, trend, icon: Icon, color, bgColor }) => {
-    const [count, setCount] = useState(0);
-    
-    useEffect(() => {
-        let start = 0;
-        const end = (value && typeof value === 'string') ? parseInt(value.replace(/,/g, '')) : (typeof value === 'number' ? value : 0);
-        if (start === end) return;
-        
-        let timer = setInterval(() => {
-            start += Math.ceil(end / 100);
-            if (start >= end) {
-                setCount(end);
-                clearInterval(timer);
-            } else {
-                setCount(start);
-            }
-        }, 10);
-        
-        return () => clearInterval(timer);
-    }, [value]);
-
-    return (
-        <motion.div 
-            whileHover={{ y: -5 }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            className="stat-card"
-        >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '1.25rem' }}>
-                <div style={{ background: bgColor, padding: '12px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Icon size={22} color={color} strokeWidth={2.5} />
-                </div>
-                <div className="trend" style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '4px', 
-                    fontSize: '0.7rem', 
-                    fontWeight: 700,
-                    padding: '4px 8px',
-                    borderRadius: '6px',
-                    background: trend.includes('↑') ? 'var(--success-bg)' : 'var(--bg-secondary)',
-                    color: trend.includes('↑') ? '#15803D' : 'var(--text-secondary)'
-                }}>
-                    {trend.includes('↑') ? <ArrowUpRight size={12} /> : <Activity size={12} />}
-                    <span>{trend.split(' ')[1] || trend}</span>
-                </div>
-            </div>
-            
-            <p className="label">{label}</p>
-            <h3 className="value" style={{ fontSize: '1.8rem', letterSpacing: '-0.5px' }}>
-                {typeof value === 'string' && isNaN(value.replace(/,/g, '')) ? value : count.toLocaleString()}
-            </h3>
-        </motion.div>
-    );
-};
+import StatCard from '../components/dashboard/StatCard';
+import DeliveryPieChart from '../components/dashboard/DeliveryPieChart';
+import Spinner from '../components/ui/Spinner';
+import useFetch from '../hooks/useFetch';
 
 const Dashboard = ({ history }) => {
-    const [stats, setStats] = useState({
-        totalPincodes: 0,
-        totalStates: 0,
-        deliveryOffices: 0,
-        nonDeliveryOffices: 0
-    });
-    const [distribution, setDistribution] = useState([]);
+    const { data: stats, loading: statsLoading } = useFetch('/api/stats');
+    const { data: distribution } = useFetch('/api/stats/state-distribution');
+    const { data: delData } = useFetch('/api/stats/delivery-distribution');
+    const { data: reachRes } = useFetch('/api/stats/state-reach');
+    const { data: chartData } = useFetch('/api/stats/search-activity');
+
     const [deliveryData, setDeliveryData] = useState([]);
-    const [stateReach, setStateReach] = useState([]);
-    const [chartData, setChartData] = useState([]);
-    const [loading, setLoading] = useState(true);
-
-
-
-    const fetchData = async () => {
-        try {
-            const [sRes, dRes, delRes, reachRes, activityRes] = await Promise.all([
-                fetch('/api/stats'),
-                fetch('/api/stats/state-distribution'),
-                fetch('/api/stats/delivery-distribution'),
-                fetch('/api/stats/state-reach'),
-                fetch('/api/stats/search-activity')
-            ]);
-            
-            const [sData, dData, delData, reachData, activityData] = await Promise.all([
-                sRes.json(),
-                dRes.json(),
-                delRes.json(),
-                reachRes.json(),
-                activityRes.json()
-            ]);
-
-            if (sRes.ok) setStats(sData);
-            if (dRes.ok) setDistribution(dData);
-            if (reachRes.ok) setStateReach(reachData);
-            if (activityRes.ok) setChartData(activityData);
-            if (delRes.ok) {
-                setDeliveryData([
-                    { name: 'Delivery', value: delData.delivery, color: '#10B981' },
-                    { name: 'Non-Delivery', value: delData.nonDelivery, color: '#F59E0B' }
-                ]);
-            }
-        } catch (err) {
-            console.error('Data fetch error:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     useEffect(() => {
-        fetchData();
-    }, []);
-
-    const COLORS = ['#14B8A6', '#0EA5E9', '#6366F1', '#8B5CF6', '#D946EF'];
+        if (delData) {
+            setDeliveryData([
+                { name: 'Delivery', value: delData.delivery, color: '#10B981' },
+                { name: 'Non-Delivery', value: delData.nonDelivery, color: '#F59E0B' }
+            ]);
+        }
+    }, [delData]);
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -128,6 +40,8 @@ const Dashboard = ({ history }) => {
         visible: { y: 0, opacity: 1 }
     };
 
+    if (statsLoading) return <Spinner size="60px" />;
+
     return (
         <motion.section 
             variants={containerVariants}
@@ -136,10 +50,10 @@ const Dashboard = ({ history }) => {
             style={{ padding: '0 0 2.5rem' }}
         >
             <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem', padding: '1.5rem 2.5rem 2.5rem' }}>
-                <StatCard label="Total Pincodes" value={stats.totalPincodes} trend="↑ Master" icon={Hash} color="var(--primary)" bgColor="var(--primary-light)" />
-                <StatCard label="Total States" value={stats.totalStates} trend="↑ Global" icon={Globe} color="var(--secondary)" bgColor="var(--secondary-light)" />
-                <StatCard label="Delivery Hubs" value={stats.deliveryOffices} trend="↑ Active" icon={Zap} color="#10B981" bgColor="#D1FAE5" />
-                <StatCard label="Support Nodes" value={stats.nonDeliveryOffices} trend="↑ Operational" icon={Activity} color="#F59E0B" bgColor="#FEF3C7" />
+                <StatCard label="Total Pincodes" value={stats?.totalPincodes} trend="↑ Master" icon={Hash} color="var(--primary)" bgColor="var(--primary-light)" />
+                <StatCard label="Total States" value={stats?.totalStates} trend="↑ Global" icon={Globe} color="var(--secondary)" bgColor="var(--secondary-light)" />
+                <StatCard label="Delivery Hubs" value={stats?.deliveryOffices} trend="↑ Active" icon={Zap} color="#10B981" bgColor="#D1FAE5" />
+                <StatCard label="Support Nodes" value={stats?.nonDeliveryOffices} trend="↑ Operational" icon={Activity} color="#F59E0B" bgColor="#FEF3C7" />
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '1.5rem', padding: '0 2.5rem' }}>
@@ -152,7 +66,7 @@ const Dashboard = ({ history }) => {
                     </div>
                     <div style={{ width: '100%', height: 260, minHeight: 260 }}>
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={chartData}>
+                            <AreaChart data={chartData || []}>
                                 <defs>
                                     <linearGradient id="colorSearches" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.2}/>
@@ -180,7 +94,7 @@ const Dashboard = ({ history }) => {
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                         <AnimatePresence>
-                            {history.length === 0 ? (
+                            {(!history || history.length === 0) ? (
                                 <div style={{ textAlign: 'center', padding: '3rem 0', color: 'var(--text-placeholder)' }}>
                                     <Activity size={32} style={{ marginBottom: '1rem', opacity: 0.2 }} />
                                     <p style={{ fontSize: '0.85rem', fontWeight: 500 }}>No stream data available</p>
@@ -228,7 +142,7 @@ const Dashboard = ({ history }) => {
                     </div>
                     
                     <div style={{ width: '100%', height: 450, position: 'relative' }}>
-                        <IndiaMap distribution={distribution} />
+                        <IndiaMap distribution={distribution || []} />
                     </div>
                 </motion.div>
 
@@ -239,32 +153,7 @@ const Dashboard = ({ history }) => {
                             <h2 style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--text-primary)', marginTop: '4px' }}>Network efficiency</h2>
                         </div>
                         
-                        <div style={{ width: '100%', height: 180, minHeight: 180, position: 'relative', display: 'flex', justifyContent: 'center' }}>
-                            <ResponsiveContainer width="100%" height="100%">
-                                <PieChart>
-                                    <Pie
-                                        data={deliveryData}
-                                        cx="50%"
-                                        cy="50%"
-                                        innerRadius={60}
-                                        outerRadius={75}
-                                        paddingAngle={5}
-                                        dataKey="value"
-                                        stroke="none"
-                                    >
-                                        {deliveryData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={entry.color} />
-                                        ))}
-                                    </Pie>
-                                </PieChart>
-                            </ResponsiveContainer>
-                            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
-                                <p style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--text-primary)' }}>
-                                    {deliveryData.length > 0 ? `${((deliveryData[0].value / (deliveryData[0].value + deliveryData[1].value)) * 100).toFixed(1)}%` : '0%'}
-                                </p>
-                                <p style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>delivery</p>
-                            </div>
-                        </div>
+                        <DeliveryPieChart data={deliveryData} />
 
                         <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '1.5rem', marginBottom: '2rem' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.75rem', fontWeight: 700 }}>
@@ -278,15 +167,15 @@ const Dashboard = ({ history }) => {
                         <div style={{ borderTop: '1px solid var(--divider)', paddingTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                             <div>
                                 <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Total pincodes</p>
-                                <p style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--text-primary)' }}>{stats.totalPincodes.toLocaleString()}</p>
+                                <p style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--text-primary)' }}>{stats?.totalPincodes.toLocaleString()}</p>
                             </div>
                             <div>
                                 <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--success)' }}>Delivery enabled</p>
-                                <p style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--success)' }}>{stats.deliveryOffices.toLocaleString()}</p>
+                                <p style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--success)' }}>{stats?.deliveryOffices.toLocaleString()}</p>
                             </div>
                             <div>
                                 <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#F59E0B' }}>Non-delivery</p>
-                                <p style={{ fontSize: '1.6rem', fontWeight: 900, color: '#F59E0B' }}>{stats.nonDeliveryOffices.toLocaleString()}</p>
+                                <p style={{ fontSize: '1.6rem', fontWeight: 900, color: '#F59E0B' }}>{stats?.nonDeliveryOffices.toLocaleString()}</p>
                             </div>
                         </div>
                     </motion.div>
@@ -294,7 +183,7 @@ const Dashboard = ({ history }) => {
                     <motion.div variants={itemVariants} className="stat-card glass-card" style={{ padding: '2rem', background: 'rgba(255,255,255,0.6)' }}>
                         <h3 style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-placeholder)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '1.5rem' }}>TOP STATES BY REACH</h3>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                            {stateReach.slice(0, 5).map((item, idx) => (
+                            {(reachRes || []).slice(0, 5).map((item, idx) => (
                                 <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>{item.state}</span>
                                     <span style={{ fontSize: '0.75rem', fontWeight: 800, background: 'var(--success-bg)', color: '#15803D', padding: '4px 8px', borderRadius: '6px' }}>{item.reach.toFixed(1)}%</span>

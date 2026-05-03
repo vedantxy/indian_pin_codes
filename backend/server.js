@@ -2,42 +2,64 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const connectDB = require('./src/config/db');
+const connectDB = require('./config/db');
 
-// Import Routes
-const statsRoutes = require('./src/routes/stats.routes');
-const pincodeRoutes = require('./src/routes/pincode.routes');
-const exportRoutes = require('./src/routes/export.routes');
+// ── Middleware ───────────────────────────────────────────────────────────────
+const notFound = require('./middleware/notFound');
+const errorHandler = require('./middleware/errorHandler');
+
+// ── Routes ──────────────────────────────────────────────────────────────────
+const statsRoutes = require('./routes/stats.routes');
+const pincodeRoutes = require('./routes/pincode.routes');
+const statesRoutes = require('./routes/states.routes');
+const searchRoutes = require('./routes/search.routes');
+const exportRoutes = require('./routes/export.routes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Connect to Database
+// ── Database ────────────────────────────────────────────────────────────────
 connectDB();
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+// ── Global middleware ───────────────────────────────────────────────────────
+const allowedOrigins = (process.env.CLIENT_ORIGIN || 'http://localhost:5173')
+  .split(',')
+  .map((o) => o.trim());
 
-// API Routes
+app.use(
+  cors({
+    origin: (origin, cb) => {
+      // Allow requests with no origin (mobile apps, curl, etc.)
+      if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+      cb(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+  })
+);
+app.use(express.json({ limit: '1mb' }));
+
+// ── API routes ──────────────────────────────────────────────────────────────
 app.use('/api/stats', statsRoutes);
 app.use('/api/pincodes', pincodeRoutes);
+app.use('/api/states', statesRoutes);
+app.use('/api/search', searchRoutes);
 app.use('/api/export', exportRoutes);
-app.use('/api', pincodeRoutes); // Legacy route support for Dashboard/App components
 
-// --- Production Setup ---
+// ── Production: serve React build ───────────────────────────────────────────
 if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '../frontend/dist')));
-    app.get('*', (req, res) => {
-        res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
-    });
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+  app.get('*', (_req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+  });
 }
 
-// Start Server locally
-if (process.env.NODE_ENV !== 'production' || process.env.LOCAL === 'true') {
-    app.listen(PORT, () => {
-        console.log(`Server is running on http://localhost:${PORT}`);
-    });
-}
+// ── Error handling ──────────────────────────────────────────────────────────
+app.use(notFound);
+app.use(errorHandler);
+
+// ── Listen ──────────────────────────────────────────────────────────────────
+app.listen(PORT, () => {
+  console.log(`✓ Server running → http://localhost:${PORT}`);
+});
 
 module.exports = app;
