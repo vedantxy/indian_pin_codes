@@ -89,7 +89,7 @@ npm run import:data -- ../data/pincodes.csv --replace
 ```
 
 ### 5. Run the Application
-You can run both servers concurrently from the root directory if configured, or separately:
+Since the frontend and backend are deployed independently, you must run them in separate terminal windows:
 
 **Backend:**
 ```bash
@@ -170,4 +170,9 @@ Before pushing your code to a public repository, please ensure:
 ---
 <div align="center">
   <i>Built with ❤️ by <a href="https://github.com/vedantxy">Vedant Patel</a></i>
+  <br />
+  <br />
+  <a href="https://github.com/vedantxy"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" /></a>
+  <a href="https://linkedin.com/in/vedantxy"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>
+  <a href="https://twitter.com/vedantxy"><img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter" /></a>
 </div>
