@@ -45,13 +45,14 @@ app.use('/api/states', statesRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/export', exportRoutes);
 
-// ── Production: serve React build ───────────────────────────────────────────
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../frontend/dist')));
-  app.get('*', (_req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+// ── Root Endpoint (Health Check) ────────────────────────────────────────────
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'All-India-Pincode API is running successfully',
+    documentation: 'https://github.com/vedantxy/indian_pin_codes'
   });
-}
+});
 
 // ── Error handling ──────────────────────────────────────────────────────────
 app.use(notFound);
