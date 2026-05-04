@@ -59,13 +59,13 @@ const Footer = () => {
             </h3>
             <ul className="space-y-3">
               <li>
-                <a href="/api/docs" className="text-sm text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">REST API Docs</a>
+                <a href="https://github.com/vedantxy/indian_pin_codes/blob/main/API_DOCS.md" target="_blank" rel="noreferrer" className="text-sm text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">REST API Docs</a>
               </li>
               <li>
-                <a href="#" className="text-sm text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Data Source</a>
+                <a href="https://github.com/vedantxy/indian_pin_codes" target="_blank" rel="noreferrer" className="text-sm text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">GitHub Repo</a>
               </li>
               <li>
-                <a href="#" className="text-sm text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Status</a>
+                <Link to="/about" className="text-sm text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Data Source</Link>
               </li>
             </ul>
           </div>
