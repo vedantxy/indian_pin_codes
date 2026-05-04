@@ -30,6 +30,7 @@ exports.searchPincodes = asyncHandler(async (req, res) => {
       district: (item.districtName || '').trim(),
       state: (item[STATE_KEY] || '').trim(),
       taluk: (item.taluk || '').trim(),
+      deliveryStatus: (item.deliveryStatus || '').trim(),
     }))
   );
 });

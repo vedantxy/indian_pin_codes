@@ -1,168 +1,57 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ToastContainer, toast } from 'react-toastify';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import Sidebar from './components/layout/Sidebar.jsx';
-import TopNav from './components/layout/Navbar.jsx';
-import Dashboard from './pages/Dashboard.jsx';
-import PincodeSearch from './pages/PincodeLookup.jsx';
-import LocationIndex from './pages/Explore.jsx';
-import StateDirectory from './pages/StateDirectory.jsx';
-import ExportView from './components/ui/ExportView.jsx';
+import Navbar from './components/layout/Navbar';
+import Footer from './components/layout/Footer';
+import Home from './pages/Home';
+import Explore from './pages/Explore';
+import Dashboard from './pages/Dashboard';
+import About from './pages/About';
+import PincodeDetail from './pages/PincodeDetail';
+
+const AnimatedRoutes = () => {
+  const location = useLocation();
+  
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<Home />} />
+        <Route path="/explore" element={<Explore />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/pincode/:pincode" element={<PincodeDetail />} />
+      </Routes>
+    </AnimatePresence>
+  );
+};
 
 const App = () => {
-    const [activeView, setActiveView] = useState('dashboard');
-    const [searchHistory, setSearchHistory] = useState(() => {
-        return JSON.parse(localStorage.getItem('searchHistory') || '[]');
-    });
-    const [states, setStates] = useState([]);
-    const [pincodeResults, setPincodeResults] = useState(null);
-    const [stateResults, setStateResults] = useState(null);
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        const fetchStates = async () => {
-            try {
-                const res = await fetch('/api/states');
-                if (res.ok) {
-                    const data = await res.json();
-                    setStates(data);
-                }
-            } catch (err) {
-                console.error('Error fetching states:', err);
-                toast.error('Failed to load Indian states network');
-            }
-        };
-        fetchStates();
-    }, []);
-
-    const addToHistory = (type, value) => {
-        const newItem = { 
-            type, 
-            value, 
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
-        };
-        const newHistory = [newItem, ...searchHistory.slice(0, 9)];
-        setSearchHistory(newHistory);
-        localStorage.setItem('searchHistory', JSON.stringify(newHistory));
-    };
-
-    const handlePincodeSearch = async (pincode) => {
-        setLoading(true);
-        try {
-            const res = await fetch(`/api/pincode/${pincode}`);
-            const data = await res.json();
-            if (res.ok) {
-                setPincodeResults(data);
-                addToHistory('Pincode', pincode);
-                toast.success(`Success! Found ${data.length} offices for ${pincode}`);
-            } else {
-                setPincodeResults([]);
-                toast.warning(data.message || 'No data found for this pincode');
-            }
-        } catch (err) {
-            console.error('Error:', err);
-            toast.error('Network error during pincode retrieval');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleStateBrowse = async (stateName) => {
-        setLoading(true);
-        try {
-            const res = await fetch(`/api/states/${encodeURIComponent(stateName)}`);
-            const data = await res.json();
-            if (res.ok) {
-                setStateResults(data);
-                addToHistory('State', stateName);
-                const districtCount = Object.keys(data).length;
-                toast.success(`Loaded ${districtCount} districts for ${stateName}`);
-            } else {
-                setStateResults({});
-                toast.warning(data.message || 'Could not load state directory');
-            }
-        } catch (err) {
-            console.error('Error:', err);
-            toast.error('Network error during state directory fetch');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const pageVariants = {
-        initial: { opacity: 0, x: 20 },
-        in: { opacity: 1, x: 0 },
-        out: { opacity: 0, x: -20 }
-    };
-
-    const pageTransition = {
-        type: "tween",
-        ease: "anticipate",
-        duration: 0.4
-    };
-
-    return (
-        <div className="admin-theme">
-            <Sidebar activeView={activeView} setActiveView={setActiveView} />
-            
-            <main className="main-content">
-                <TopNav />
-                
-                <div style={{ flex: 1, position: 'relative', overflowY: 'auto' }}>
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={activeView}
-                            initial="initial"
-                            animate="in"
-                            exit="out"
-                            variants={pageVariants}
-                            transition={pageTransition}
-                            style={{ height: '100%' }}
-                        >
-                            {activeView === 'dashboard' && (
-                                <Dashboard history={searchHistory} />
-                            )}
-                            
-                            {activeView === 'pincode' && (
-                                <PincodeSearch 
-                                    onSearch={handlePincodeSearch} 
-                                    results={pincodeResults} 
-                                    loading={loading} 
-                                />
-                            )}
-                            
-                            {activeView === 'states' && (
-                                <StateDirectory />
-                            )}
-
-                            {activeView === 'location' && (
-                                <LocationIndex />
-                            )}
-
-                            {activeView === 'downloads' && (
-                                <ExportView states={states} />
-                            )}
-                        </motion.div>
-                    </AnimatePresence>
-                </div>
-            </main>
-
-            <ToastContainer 
-                position="top-right"
-                autoClose={4000}
-                hideProgressBar={false}
-                newestOnTop
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="dark"
-            />
-        </div>
-    );
+  return (
+    <Router>
+      <div className="flex flex-col min-h-screen">
+        <Navbar />
+        <main className="flex-grow">
+          <AnimatedRoutes />
+        </main>
+        <Footer />
+        <ToastContainer
+          position="top-right"
+          autoClose={4000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+        />
+      </div>
+    </Router>
+  );
 };
 
 export default App;
